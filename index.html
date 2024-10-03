@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tastiera Prova</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Keyboard</h1>
+    <p>Click or press keys to play notes (A, S, D, F, G, H, J, K for white keys, W, E, T, Y, U for black keys)</p>
+
+    <!-- Keyboard -->
+    <div class="keyboard">
+        <!-- White keys -->
+        <div class="key lower" data-note="C4">A</div>
+        <div class="key lower" data-note="D4">S</div>
+        <div class="key lower" data-note="E4">D</div>
+        <div class="key lower" data-note="F4">F</div>
+        <div class="key lower" data-note="G4">G</div>
+        <div class="key lower" data-note="A4">H</div>
+        <div class="key lower" data-note="B4">J</div>
+        <div class="key lower" data-note="C5">K</div>
+
+        <!-- Black keys -->
+        <div class="key upper" data-note="C#4">W</div>
+        <div class="key upper" data-note="D#4">E</div>
+        <div class="key upper" data-note="F#4">T</div>
+        <div class="key upper" data-note="G#4">Y</div>
+        <div class="key upper" data-note="A#4">U</div>
+    </div>
+
+    <script>
+        // Map keys to notes
+        const keyToNote = {
+            'a': 'C4',
+            'w': 'C#4',
+            's': 'D4',
+            'e': 'D#4',
+            'd': 'E4',
+            'f': 'F4',
+            't': 'F#4',
+            'g': 'G4',
+            'y': 'G#4',
+            'h': 'A4',
+            'u': 'A#4',
+            'j': 'B4',
+            'k': 'C5'
+        };
+
+        // Web Audio API setup
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Play tone with attack and release envelope
+        function playTone(frequency) {
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            // Set waveform type
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+            // Set up gain node 
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime); // Start at 0 
+            gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.01); // fade-in 
+            gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.9); // fade-out 
+
+            // Connect nodes
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            // Start the oscillator
+            oscillator.start();
+
+            // Stop the oscillator after 1 second 
+            oscillator.stop(audioCtx.currentTime + 1);
+        }
+
+        // Note frequencies 
+        const noteFrequencies = {
+            'C4': 261.63,
+            'C#4': 277.18,
+            'D4': 293.66,
+            'D#4': 311.13,
+            'E4': 329.63,
+            'F4': 349.23,
+            'F#4': 369.99,
+            'G4': 392.00,
+            'G#4': 415.30,
+            'A4': 440.00,
+            'A#4': 466.16,
+            'B4': 493.88,
+            'C5': 523.26,
+        };
+
+        // Ensure the audio context is resumed on user interaction (fix for Safari)
+        function resumeAudioContext() {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Event listener for keyboard keys
+        document.addEventListener('keydown', (event) => {
+            resumeAudioContext();  
+            const key = event.key.toLowerCase();
+            const note = keyToNote[key];
+
+            if (note) {
+                playTone(noteFrequencies[note]);
+            }
+        });
+
+        // Event listener for clicking on-screen keys
+        document.querySelectorAll('.key').forEach(key => {
+            key.addEventListener('mousedown', () => {
+                resumeAudioContext();  
+                const note = key.getAttribute('data-note');
+                playTone(noteFrequencies[note]);
+            });
+        });
+    </script>
+</body>
+</html>
