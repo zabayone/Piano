@@ -40,6 +40,7 @@ const keyToMidi = {
 var head_div = document.getElementById("head")
 var buttons_div = document.getElementById("buttons")
 var controls_div = document.getElementById("controls")
+var oct_num = document.getElementById("oct_num")
 
 const c = new AudioContext();
 
@@ -82,6 +83,7 @@ function onLoad() {
         
     })
     buttons_div.innerHTML = but_text
+    oct_num.innerHTML = octave/12 - 1
     next();
 }
 
@@ -149,8 +151,7 @@ function next(){
             rep_index++;
         }
     } else {
-        head_div.innerHTML = "done"
-        location.href = '/results'
+        seeResults()
     }
 }
 
@@ -234,6 +235,11 @@ function play(val){
     }
 }
 
+function seeResults() {
+        head_div.innerHTML = "done"
+        location.href = '/results'
+}
+
 // NICOLA'S CODE
 
 // Web Audio API setup
@@ -281,7 +287,8 @@ document.addEventListener('keydown', (event) => {
     const key = event.key.toLowerCase();
     const note = keyToMidi[key];
 
-    if (note && !pressed_keys.find(e => e == key)) {
+    head_div.innerHTML = "key = " + note
+    if (note != undefined && !pressed_keys.find(e => e == key)) {
         //playTone(midiToFreq(note));
         asyncTone(midiToFreq(note + octave));
         pressed_keys.push(key)                    // save a key as pressed
@@ -292,7 +299,7 @@ document.addEventListener('keyup', (event) => {   // used to impeed repetitions 
     const key = event.key.toLowerCase();
     const note = keyToMidi[key];
 
-    if (note && pressed_keys.find(e => e == key)) {
+    if (note != undefined && pressed_keys.find(e => e == key)) {
         pressed_keys.splice(pressed_keys.indexOf(key),1)
     }   
 })
@@ -308,7 +315,10 @@ document.querySelectorAll('.key').forEach(key => {
 
 function octave_up() {
     octave += 12;
+    oct_num.innerHTML = octave/12 - 1
+
 }
 function octave_down() {
     octave -= 12;
+    oct_num.innerHTML = octave/12 - 1
 }
