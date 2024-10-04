@@ -13,6 +13,27 @@ var root = 0
 var note_list = []
 var checked = 0
 
+//keyboards variables
+
+var octave = 60
+
+// Map keys to relative midi values
+const keyToMidi = {
+    'a': 0,          //C4
+    'w': 1,          //C#4
+    's': 2,          //D4
+    'e': 3,          //D#4
+    'd': 4,          //E4
+    'f': 5,          //F4
+    't': 6,          //F#4
+    'g': 7,          //G4
+    'y': 8,          //G#4
+    'h': 9,          //A4
+    'u': 10,          //A#4
+    'j': 11,          //B4
+    'k': 12           //C5
+};
+
 // html oblects
 var head_div = document.getElementById("head")
 var buttons_div = document.getElementById("buttons")
@@ -206,3 +227,60 @@ function play(val){
         harm_play(note_list)
     }
 }
+
+// NICOLA'S CODE
+
+// Web Audio API setup
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+// Play tone with attack and release envelope
+function playTone(frequency) {
+    const oscillator = audioCtx.createOscillator();
+    const gainNode = audioCtx.createGain();
+
+    // Set waveform type
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+    // Set up gain node 
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime); // Start at 0 
+    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.01); // fade-in 
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.9); // fade-out 
+
+    // Connect nodes
+    oscillator.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    // Start the oscillator
+    oscillator.start();
+
+    // Stop the oscillator after 1 second 
+    oscillator.stop(audioCtx.currentTime + 1);
+}
+
+// Ensure the audio context is resumed on user interaction (fix for Safari)
+function resumeAudioContext() {
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+// Event listener for keyboard keys
+document.addEventListener('keydown', (event) => {
+    resumeAudioContext();  
+    const key = event.key.toLowerCase();
+    const note = keyToMidi[key] + octave;
+
+    if (note) {
+        playTone(midiToFreq(note));
+    }
+});
+
+// Event listener for clicking on-screen keys
+document.querySelectorAll('.key').forEach(key => {
+    key.addEventListener('mousedown', () => {
+        resumeAudioContext();  
+        const note = Number(key.getAttribute('data-note')) + octave;
+        playTone(midiToFreq(note));
+    });
+});
