@@ -62,7 +62,7 @@ var chord_codes = ['3 7',                 //  1
 
 // controls for the chord exercises
 var chord_controls = '<button id = "replay" onclick = "replay()" class = "controls_button">Replay</button>'+
-                     '<button id = "replay" onclick = "root()" class = "controls_button">Root</button>'+
+                     '<button id = "replay" onclick = "play_root()" class = "controls_button">Root</button>'+
                      '<button id = "next" onclick = "next()" class = "controls_button">Next</button>'
 // control for interval exercises
 var interval_controls = '<button id = "replay" onclick = "replay()" class = "controls_button">Replay</button>'+

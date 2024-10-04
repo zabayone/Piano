@@ -7,11 +7,13 @@ var dir
 // running state
 var values
 var rep_index = 0
-var button_list = []
-var curr_val = 1
-var root = 0
-var note_list = []
+var button_list = []// container of the html for the buttons
+var curr_val = 1    // exercise value
+var root = 0        // midi of the root note
+var note_list = []  // list of frequencies of the current exercise
 var checked = 0
+
+var pressed_keys = []
 
 //keyboards variables
 
@@ -19,19 +21,19 @@ var octave = 60
 
 // Map keys to relative midi values
 const keyToMidi = {
-    'a': 0,          //C4
-    'w': 1,          //C#4
-    's': 2,          //D4
-    'e': 3,          //D#4
-    'd': 4,          //E4
-    'f': 5,          //F4
-    't': 6,          //F#4
-    'g': 7,          //G4
-    'y': 8,          //G#4
-    'h': 9,          //A4
-    'u': 10,          //A#4
-    'j': 11,          //B4
-    'k': 12           //C5
+    'a': 0,             //C4
+    'w': 1,             //C#4
+    's': 2,             //D4
+    'e': 3,             //D#4
+    'd': 4,             //E4
+    'f': 5,             //F4
+    't': 6,             //F#4
+    'g': 7,             //G4
+    'y': 8,             //G#4
+    'h': 9,             //A4
+    'u': 10,            //A#4
+    'j': 11,            //B4
+    'k': 12             //C5
 };
 
 // html oblects
@@ -80,6 +82,7 @@ function onLoad() {
         
     })
     buttons_div.innerHTML = but_text
+    next();
 }
 
 class ChoiceButton {  // class encapsulating a button
@@ -128,11 +131,7 @@ function midiToFreq(midi){
 }
 
 function replay(){
-    if(type = "11") {
-        mel_play(note_list)
-    } else {
-        harm_play(note_list)
-    }
+    play(curr_val)
 }
 
 function next(){
@@ -141,32 +140,33 @@ function next(){
     //head_div.innerHTML = "values =  " + values
     let idx = Math.floor(Math.random() * values.length)
     curr_val = values[idx]
-    //head_div.innerHTML = "post =  " + idx + " " + curr_val
-    root = Math.floor(Math.random() * 48) + 36
+    root = Math.floor(Math.random() * 32) + 50
+    head_div.innerHTML = "post =  " + idx + " " + curr_val + " " + root
     play(curr_val)
 }
 
-function root(){
-    let root_f = note_list[0]
+function play_root(){
+    let root_f = midiToFreq(root)
     harm_play(root_f)
 }
 
+//play a set of notes harmonically --- doesn't work
+
 function harm_play(notes){
+    let txt = ''
+    for (let i = 0; i < note_list.length; i++) {
+        txt = txt + note_list[i] + " ";            
+    }
+    //head_div.innerHTML = txt
     notes.forEach(note => {
-        let osc = c.createOscillator();
-        osc.frequency.value = note
-        osc.type = "sine"
-        let gain = c.createGain();
-        osc.connect(gain)
-        gain.gain.setValueAtTime(0,c.currentTime);
-        gain.gain.linearRampToValueAtTime(1,c.currentTime+ 10)
-        gain.gain.linearRampToValueAtTime(1,c.currentTime + 1500)
-        gain.gain.linearRampToValueAtTime(0,c.currentTime + 2000)
-        gain.connect(c.destination)
-        osc.start();
-        setTimeout(() => osc.stop(), c.currentTime + 4000);
+        resumeAudioContext();  
+        //head_div.innerHTML = note
+        asyncTone(note)
+        //playTone(note)
     })
 }
+
+// play a sequence of notes melodically --- doesn't work
 
 function mel_play(notes){
     let duration = 0;
@@ -187,6 +187,8 @@ function mel_play(notes){
     })
 }
 
+
+// functions that implements the exercise, used to play more notes together or one after the other, depending on the exercise number 
 function play(val){
     let curr_code = ''
     if (type == "11") {
@@ -209,15 +211,17 @@ function play(val){
         note_list.push(midiToFreq(root))
         note_list.push(midiToFreq(second_note))
         mel_play(note_list)
+        note_list = []
     } else if (type == "12") {
         curr_code = val
         let second_note = root + Number(curr_code)
-        notes_list.push(midiToFreq(root))
+        note_list.push(midiToFreq(root))
         note_list.push(midiToFreq(second_note))
         harm_play(note_list)
+        note_list = []
     } else {
         note_list.push(midiToFreq(root))
-        curr_code = chord_codes[val]
+        curr_code = chord_codes[val-1]
         curr_code = curr_code.split(' ')
         //head_div.innerHTML = "code =  " + cur_code
         curr_code.forEach(code => {
@@ -225,6 +229,7 @@ function play(val){
             note_list.push(midiToFreq(oth))
         })
         harm_play(note_list)
+        note_list = []
     }
 }
 
@@ -258,6 +263,10 @@ function playTone(frequency) {
     oscillator.stop(audioCtx.currentTime + 1);
 }
 
+async function asyncTone(freq) {
+    playTone(freq)
+}
+
 // Ensure the audio context is resumed on user interaction (fix for Safari)
 function resumeAudioContext() {
     if (audioCtx.state === 'suspended') {
@@ -269,12 +278,23 @@ function resumeAudioContext() {
 document.addEventListener('keydown', (event) => {
     resumeAudioContext();  
     const key = event.key.toLowerCase();
-    const note = keyToMidi[key] + octave;
+    const note = keyToMidi[key];
 
-    if (note) {
-        playTone(midiToFreq(note));
+    if (note && !pressed_keys.find(e => e == key)) {
+        //playTone(midiToFreq(note));
+        asyncTone(midiToFreq(note + octave));
+        pressed_keys.push(key)                    // save a key as pressed
     }
 });
+
+document.addEventListener('keyup', (event) => {   // used to impeed repetitions of the same note
+    const key = event.key.toLowerCase();
+    const note = keyToMidi[key];
+
+    if (note && pressed_keys.find(e => e == key)) {
+        pressed_keys.splice(pressed_keys.indexOf(key),1)
+    }   
+})
 
 // Event listener for clicking on-screen keys
 document.querySelectorAll('.key').forEach(key => {
@@ -284,3 +304,10 @@ document.querySelectorAll('.key').forEach(key => {
         playTone(midiToFreq(note));
     });
 });
+
+function octave_up() {
+    octave += 12;
+}
+function octave_down() {
+    octave -= 12;
+}
