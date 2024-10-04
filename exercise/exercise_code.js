@@ -11,7 +11,7 @@ var button_list = []// container of the html for the buttons
 var curr_val = 1    // exercise value
 var root = 0        // midi of the root note
 var note_list = []  // list of frequencies of the current exercise
-var checked = 0
+var checked = 1
 
 var pressed_keys = []
 
@@ -135,18 +135,28 @@ function replay(){
 }
 
 function next(){
-    checked = 0
-    note_list = []
-    //head_div.innerHTML = "values =  " + values
-    let idx = Math.floor(Math.random() * values.length)
-    curr_val = values[idx]
-    root = Math.floor(Math.random() * 32) + 50
-    head_div.innerHTML = "post =  " + idx + " " + curr_val + " " + root
-    play(curr_val)
+    if (rep_index < reps){
+        if (checked) {
+            checked = 0
+            note_list = []
+            //head_div.innerHTML = "values =  " + values
+            let idx = Math.floor(Math.random() * values.length)
+            curr_val = values[idx]
+            root = Math.floor(Math.random() * 32) + 50
+            head_div.innerHTML = "post =  " + idx + " " + curr_val + " " + root
+            play(curr_val)
+            head_div.innerHTML = "rep_idx = " + rep_index
+            rep_index++;
+        }
+    } else {
+        head_div.innerHTML = "done"
+        location.href = '/results'
+    }
 }
 
 function play_root(){
-    let root_f = midiToFreq(root)
+    let root_f = [] 
+    root_f.push(midiToFreq(root))
     harm_play(root_f)
 }
 
@@ -154,10 +164,10 @@ function play_root(){
 
 function harm_play(notes){
     let txt = ''
-    for (let i = 0; i < note_list.length; i++) {
+    for (let i = 0; i < notes.length; i++) {
         txt = txt + note_list[i] + " ";            
     }
-    //head_div.innerHTML = txt
+    head_div.innerHTML = txt
     notes.forEach(note => {
         resumeAudioContext();  
         //head_div.innerHTML = note
@@ -171,19 +181,10 @@ function harm_play(notes){
 function mel_play(notes){
     let duration = 0;
     notes.forEach(note => {
-        let osc = c.createOscillator();
-        osc.frequency.value = note
-        osc.type = "sine"
-        let gain = c.createGain();
-        osc.connect(gain)
-        gain.gain.setValueAtTime(0,c.currentTime + duration);
-        gain.gain.linearRampToValueAtTime(1,c.currentTime + duration + 10)
-        gain.gain.linearRampToValueAtTime(1,c.currentTime + duration + 1500)
-        gain.gain.linearRampToValueAtTime(0,c.currentTime + duration + 2000)
-        gain.connect(c.destination)
-        osc.start(c.currentTime + duration);
-        setTimeout(() => osc.stop(), c.currentTime + duration + 2000);
-        duration = duration + 2000
+        resumeAudioContext();  
+        //head_div.innerHTML = note
+        //asyncTone(note)
+        playTone(note)
     })
 }
 
