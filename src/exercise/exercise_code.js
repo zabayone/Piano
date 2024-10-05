@@ -13,10 +13,9 @@ var root = 0        // midi of the root note
 var note_list = []  // list of frequencies of the current exercise
 var checked = 1
 
-var pressed_keys = []
+var pressed_keys = [] // array used to store the pressed keys in order to avoid multiple presses if held
 
 //keyboards variables
-
 var octave = 60
 
 // Map keys to relative midi values
@@ -51,24 +50,26 @@ const c = new AudioContext();
  *  
  */
 function onLoad() {
-    type = localStorage.getItem("type") // retrieving from local storage
-    reps = localStorage.getItem("reps")
-    key = localStorage.getItem("key")
+    // retrieving from local storage
+    type = localStorage.getItem("type") // which exercise
+    reps = localStorage.getItem("reps") // number of repetitions
+    key = localStorage.getItem("key")   // which intervals/chords
     values = key.split("e")
     let text = ''
-    switch(type){  // checking incoming values
+    switch(type){  // setts the correct control buttons
         case "11":
-            dir = localStorage.getItem("dir")
-            text = 'type = '+type+'<br>dir = '+dir+'<br>reps = ' + reps +'<br>key = '+key +'<br> values: <br>'
+            dir = localStorage.getItem("dir") // gets the direction if it's melodic intervals
+            text = 'type = '+type+'<br>dir = '+dir+'<br>reps = ' + reps +'<br>key = '+key +'<br> values: <br>' // control string to be removed
         case "12":
             controls_div.innerHTML = interval_controls
             break;
         case"21":
         case"22":
         case"23":
-        controls_div.innerHTML = chord_controls
+            controls_div.innerHTML = chord_controls
+            break;
     }
-    if (type != "11") {
+    if (type != "11") { // control text to be removed
         text = 'type = '+type+'<br>reps = ' + reps +'<br>key = '+key +'<br> values: <br>'   
     }
     values.forEach( value => {
@@ -77,9 +78,8 @@ function onLoad() {
     head_div.innerHTML = text
 
     let but_text = ''
-    values.forEach(value =>{    // generates the html for displaying the correct buttons
-        button_list.push(new ChoiceButton(value))
-        but_text = but_text + button_list[button_list.length-1].Html
+    values.forEach(value =>{    // "generates" the html for displaying the correct choices for the execise
+        but_text = but_text + buttonHtml(value)
         
     })
     buttons_div.innerHTML = but_text
@@ -87,32 +87,25 @@ function onLoad() {
     next();
 }
 
-class ChoiceButton {  // class encapsulating a button
-    text = ''
-    value = ''
-    constructor(code){
-        switch (type) {
-            case "11":
-            case "12":
-                this.value = code
-                this.text = interval_text[code-1]
-                break;
-            case "21":
-            case "22":
-            case "23":
-                this.value = code
-                this.text = chord_text[code-1]
-                break;
-            default:
-                break;
-        }
+function buttonHtml(code){ // function for the Html
+    let text
+    switch (type) {
+        case "11":
+        case "12":
+            text = interval_text[code-1]
+            break;
+        case "21":
+        case "22":
+        case "23":
+            text = chord_text[code-1]
+            break;
+        default:
+            break;
     }
-    get Html(){
-        return '<button id = "'+this.value+'" onclick = "  check_fun('+this.value+')" class = "choice_button">'+this.text+' </button>'
-    }
+    return '<button id = "'+code+'" onclick = "  check_fun('+code+')" class = "choice_button">'+text+' </button>'
 }
 
-function check_fun(value) {
+function check_fun(value) { // executed when chosing an option
     if(checked == 0){ 
        if(value == curr_val) {
             head_div.innerHTML = "correct"
@@ -126,17 +119,17 @@ function check_fun(value) {
 
 }
 
-function midiToFreq(midi){
+function midiToFreq(midi){ // from midi to frequency
     let midi_n = Number(midi)
     let offset = midi_n - 69
     return 440*(Math.pow(2,offset/12))
 }
 
-function replay(){
+function replay(){ // replays the same solution
     play(curr_val)
 }
 
-function next(){
+function next(){ // function that creates the next
     if (rep_index < reps){
         if (checked) {
             checked = 0
@@ -193,10 +186,10 @@ function mel_play(notes){
 // functions that implements the exercise, used to play more notes together or one after the other, depending on the exercise number 
 function play(val){
     let curr_code = ''
-    if (type == "11") {
+    if (type == "11") { // melodic intervals
         curr_code = val
         let second_note = 0;
-        switch (dir) {
+        switch (dir) { // switch on the direction of the exercise
             case "up":
                 second_note = root + Number(curr_code)
                 break;
@@ -214,14 +207,14 @@ function play(val){
         note_list.push(midiToFreq(second_note))
         mel_play(note_list)
         note_list = []
-    } else if (type == "12") {
+    } else if (type == "12") { // harmonic intervals
         curr_code = val
         let second_note = root + Number(curr_code)
         note_list.push(midiToFreq(root))
         note_list.push(midiToFreq(second_note))
         harm_play(note_list)
         note_list = []
-    } else {
+    } else { // chords
         note_list.push(midiToFreq(root))
         curr_code = chord_codes[val-1]
         curr_code = curr_code.split(' ')
@@ -236,6 +229,7 @@ function play(val){
 }
 
 function seeResults() {
+        
         head_div.innerHTML = "done"
         location.href = '/results'
 }
