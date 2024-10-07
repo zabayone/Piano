@@ -249,34 +249,133 @@ function seeResults() {
 // Web Audio API setup
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
-// Play tone with attack and release envelope
 function playFrequency(frequency) {
     const oscillator = audioCtx.createOscillator();
-    const oscillator2 = audioCtx.createOscillator()
     const gainNode = audioCtx.createGain();
+    const filterNode = audioCtx.createBiquadFilter(); // Create the low-pass filter
+
+    // Set up the filter
+    filterNode.type = 'lowpass'; // Low-pass filter type
+    filterNode.frequency.setValueAtTime(2000, audioCtx.currentTime); // Set cutoff frequency
 
     // Set waveform type
     oscillator.type = 'sine';
     oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
 
-    // Set up gain node 
-    gainNode.gain.setValueAtTime(0, audioCtx.currentTime); // Start at 0 
-    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.01); // fade-in 
-    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.9); // fade-out 
+    // Set up gain node
+    gainNode.gain.setValueAtTime(0, audioCtx.currentTime); // Start at 0
+    gainNode.gain.linearRampToValueAtTime(0.2, audioCtx.currentTime + 0.01); // Fade-in
+    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.9); // Fade-out
 
     // Connect nodes
-    oscillator.connect(gainNode);
-    gainNode.connect(audioCtx.destination);
+    oscillator.connect(filterNode);   // Oscillator output goes to the filter
+    filterNode.connect(gainNode);     // Filter output goes to the gain node
+    gainNode.connect(audioCtx.destination); // Gain node output goes to the audio destination
 
     // Start the oscillator
     oscillator.start();
 
-    // Stop the oscillator after 1 second 
+    // Stop the oscillator after 1 second
     oscillator.stop(audioCtx.currentTime + 1);
 }
 
+
+function playPianoTone(frequency) {
+    // Create oscillators for fundamental and harmonic tones
+    const fundamental = audioCtx.createOscillator();
+    const harmonic1 = audioCtx.createOscillator(); // 2nd harmonic
+    const harmonic2 = audioCtx.createOscillator(); // 3rd harmonic
+    const gainNode = audioCtx.createGain();
+    const filterNode = audioCtx.createBiquadFilter(); // Low-pass filter to soften the sound
+
+    // Oscillator settings
+    fundamental.type = 'sine';
+    fundamental.frequency.setValueAtTime(frequency, audioCtx.currentTime); // Fundamental frequency
+
+    harmonic1.type = 'sine';
+    harmonic1.frequency.setValueAtTime(frequency * 2, audioCtx.currentTime); // 2nd harmonic (double the frequency)
+
+    harmonic2.type = 'sine';
+    harmonic2.frequency.setValueAtTime(frequency * 3, audioCtx.currentTime); // 3rd harmonic (triple the frequency)
+
+    // Set up the low-pass filter to soften the high frequencies (optional but helps)
+    filterNode.type = 'lowpass';
+    filterNode.frequency.setValueAtTime(2000, audioCtx.currentTime); // Cutoff at 2000 Hz
+
+    // Set up the envelope (attack, sustain, and release)
+    const now = audioCtx.currentTime;
+    gainNode.gain.setValueAtTime(0, now); // Start at 0
+    gainNode.gain.linearRampToValueAtTime(1, now + 0.01); // Quick attack to max volume
+    gainNode.gain.linearRampToValueAtTime(0.7, now + 0.2); // Sustain a bit lower than max
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.5); // Gradual release over 1.5 seconds
+
+    // Connect the oscillators and nodes
+    fundamental.connect(filterNode);
+    harmonic1.connect(filterNode);
+    harmonic2.connect(filterNode);
+    filterNode.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    // Start the oscillators
+    fundamental.start();
+    harmonic1.start();
+    harmonic2.start();
+
+    // Stop the oscillators after 1.5 seconds (when the envelope fades out)
+    fundamental.stop(now + 1.5);
+    harmonic1.stop(now + 1.5);
+    harmonic2.stop(now + 1.5);
+}
+
+function playGuitarTone(frequency) {
+    // Create oscillators for fundamental and harmonic tones
+    const fundamental = audioCtx.createOscillator();
+    const harmonic1 = audioCtx.createOscillator(); // 2nd harmonic
+    const harmonic2 = audioCtx.createOscillator(); // 3rd harmonic
+    const gainNode = audioCtx.createGain();
+    const filterNode = audioCtx.createBiquadFilter(); // Low-pass filter to soften the sound
+
+    // Oscillator settings
+    fundamental.type = 'sawtoot';
+    fundamental.frequency.setValueAtTime(frequency, audioCtx.currentTime); // Fundamental frequency
+
+    harmonic1.type = 'sine';
+    harmonic1.frequency.setValueAtTime(frequency * 2, audioCtx.currentTime); // 2nd harmonic (double the frequency)
+
+    harmonic2.type = 'sine';
+    harmonic2.frequency.setValueAtTime(frequency * 4, audioCtx.currentTime); // 3rd harmonic (triple the frequency)
+
+    // Set up the low-pass filter to soften the high frequencies (optional but helps)
+    filterNode.type = 'lowpass';
+    filterNode.frequency.setValueAtTime(1500, audioCtx.currentTime); // Cutoff at 1500 Hz
+
+    // Set up the envelope (attack, sustain, and release)
+    const now = audioCtx.currentTime;
+    gainNode.gain.setValueAtTime(0, now); // Start at 0
+    gainNode.gain.linearRampToValueAtTime(0.6, now + 0.01); // Fast attack to simulate pluck
+    gainNode.gain.exponentialRampToValueAtTime(0.001, now + 1.0); // Fast decay to simulate string damping
+
+    // Connect the oscillators and nodes
+    fundamental.connect(filterNode);
+    harmonic1.connect(filterNode);
+    harmonic2.connect(filterNode);
+    filterNode.connect(gainNode);
+    gainNode.connect(audioCtx.destination);
+
+    // Start the oscillators
+    fundamental.start();
+    harmonic1.start();
+    harmonic2.start();
+
+    // Stop the oscillators after 1
+    fundamental.stop(now + 1);
+    harmonic1.stop(now + 1);
+    harmonic2.stop(now + 1);
+}
+
+
 async function asyncTone(freq) {
-    playFrequency(freq)
+    playFrequency(freq);
 }
 
 // Ensure the audio context is resumed on user interaction (fix for Safari)
@@ -285,6 +384,7 @@ function resumeAudioContext() {
         audioCtx.resume();
     }
 }
+
 
 // Event listener for keyboard keys
 document.addEventListener('keydown', (event) => {
