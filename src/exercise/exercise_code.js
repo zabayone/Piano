@@ -119,6 +119,16 @@ function check_fun(value) { // executed when chosing an option
 
 }
 
+// Function to play a note based on MIDI note number
+function playNoteFromMIDI(midiNote) {
+    // Formula to convert MIDI note to frequency (Hz)
+    const frequency = midiToFreq(midiNote);
+
+    // Use Web Audio API to play the note
+    playFrequency(frequency);
+}
+
+
 function midiToFreq(midi){ // from midi to frequency
     let midi_n = Number(midi)
     let offset = midi_n - 69
@@ -240,8 +250,9 @@ function seeResults() {
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 // Play tone with attack and release envelope
-function playTone(frequency) {
+function playFrequency(frequency) {
     const oscillator = audioCtx.createOscillator();
+    const oscillator2 = audioCtx.createOscillator()
     const gainNode = audioCtx.createGain();
 
     // Set waveform type
@@ -265,7 +276,7 @@ function playTone(frequency) {
 }
 
 async function asyncTone(freq) {
-    playTone(freq)
+    playFrequency(freq)
 }
 
 // Ensure the audio context is resumed on user interaction (fix for Safari)
