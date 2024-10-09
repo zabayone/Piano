@@ -11,9 +11,19 @@
     <div id="head"></div>
     <div id="buttons">buttons</div>
     <div id="controls">controls</div>
- 
+
     <!-- Piano keys layout starting from C4 (MIDI 60) -->
     <ul class="set">
+      <!-- Key control buttons -->
+      <div id="key_control">
+        <button id="oct" onclick="octave_down()">Octave Down</button>
+        <button id="oct" onclick="octave_up()">Octave Up</button>
+        <button id="inst" onclick="Piano()">Piano</button>
+        <button id="inst" onclick="Guitar()">Guitar</button>
+        <button id="inst" onclick="Synth()">Synth</button>
+
+      </div>
+      
       <li class="white c" data-note="60" onclick="playNoteFromMIDI(60)"></li> <!-- C4 (MIDI 60) -->
       <li class="black cs" data-note="61" onclick="playNoteFromMIDI(61)"></li> <!-- C#4 (MIDI 61) -->
       <li class="white d" data-note="62" onclick="playNoteFromMIDI(62)"></li> <!-- D4 (MIDI 62) -->
@@ -27,14 +37,6 @@
       <li class="black as" data-note="70" onclick="playNoteFromMIDI(70)"></li> <!-- A#4 (MIDI 70) -->
       <li class="white b" data-note="71" onclick="playNoteFromMIDI(71)"></li> <!-- B4 (MIDI 71) -->
     </ul>
-
-    <!-- Key control buttons -->
-    <div id="key_control">
-      <button onclick="octave_down()">Octave Down</button>
-      <button onclick="shrink()">Shrink</button>
-      <button onclick="expand()">Expand</button>
-      <button onclick="octave_up()">Octave Up</button>
-    </div>
 
     <!-- Script files for logic -->
     <script src="exercise_vars.js"></script>
