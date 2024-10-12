@@ -121,9 +121,11 @@ function check_fun(value) { // executed when chosing an option
 
 // Function to play a note based on MIDI note number
 function playNoteFromMIDI(midiNote) {
-    let true_note = (midiNote - octave)
-    true_note = (true_note > 0 ? true_note : true_note + 12)%12;
-    true_note = true_note + octave
+    // relate the value of the note to the same note in the octave specified by octave
+    //let true_note = ((midiNote > octave) ? (midiNote - octave)%12 : 12-(octave - midiNote)%12) + octave
+    let true_note = (midiNote - octave)%12 + octave
+    true_note = true_note < octave ? true_note+12 : true_note
+    //true_note = (true_note >= 0 ? true_note : true_note + (parseInt(true_note/12)^2)*12)%12;
     // Formula to convert MIDI note to frequency (Hz)
     const frequency = midiToFreq(true_note);
 
