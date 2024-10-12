@@ -58,15 +58,15 @@ var other = '<input type="checkbox" class = "selected" id="min7+b5" name="min7+b
             '<label for="dom7b5"> Dominant 7th (b5)</label><br>'
 // extra triads
 var other_triads = '<input type="checkbox" class = "selected" id="sus2" name="sus2" value="15">'+
-                   '<label for="sus2"> Lydian Triad</label><br>'+
+                   '<label for="sus2"> Sus 2 Triad</label><br>'+
                    '<input type="checkbox" class = "selected" id="sus4" name="sus4" value="16">'+
-                   '<label for="sus4"> Phrygian Triad</label><br>'+
+                   '<label for="sus4"> Sus 4 Triad</label><br>'+
                    '<input type="checkbox" class = "selected" id="lyd" name="lyd" value="17">'+
                    '<label for="lyd"> Lydian Triad</label><br>'+
                    '<input type="checkbox" class = "selected" id="phr" name="phr" value="18">'+
                    '<label for="phr"> Phrygian Triad</label><br>'+
                    '<input type="checkbox" class = "selected" id="loc" name="loc" value="19">'+
-                   '<label for="min"> Locrian Triad</label><br>'
+                   '<label for="loc"> Locrian Triad</label><br>'
 // extra seventh chords
 var other_seventh = '<input type="checkbox" class = "selected" id="min7+" name="min7+" value="9">'+
                     '<label for="min7+"> Minor maj7</label><br>'+
