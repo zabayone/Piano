@@ -1,3 +1,7 @@
+
+    /*PS: this is not my code... just borrowing ;p */
+
+
 var NotaDefinitiva;
 document.addEventListener("DOMContentLoaded", function() {
     alert("Put your browser in full-screen mode to better enjoy the app (PRESS F11)")
