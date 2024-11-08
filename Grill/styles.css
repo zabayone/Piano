@@ -1,0 +1,98 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 500px;
+  height: 500px;
+  justify-items: center;
+  align-items: center;
+}
+
+.cell {
+  width: 100%;
+  height: 100%;
+  background-color: #fff;
+  border: 1px solid #b8b8b8;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cell.state-0::after {
+  content: '';
+  position: absolute;
+  width: 25%;
+  height: 25%;
+  background-color: #bebebe;
+  border-radius: 50%;
+}
+
+
+.cell.state-1::after, .cell.state-2::after {
+  content: '';
+  position: absolute;
+  width: 100%;  /* Ancho de la barra */
+  height: 2px;  /* Grosor de la barra */
+  top: 50%; /* Centrado vertical */
+  left: 50%; /* Centrado horizontal */
+  transform-origin: center center; /* Hacemos la rotación desde el centro */
+  margin-top: -1px; /* Ajuste para centrar la barra verticalmente */
+  margin-left: -50%; /* Ajuste para centrar la barra horizontalmente */
+}
+
+.cell.state-1::after {
+  background-color: #d9534f; /* Color de la barra diagonal */
+  transform: rotate(45deg); /* Rotación para crear la diagonal hacia abajo (izquierda a derecha) */
+}
+
+.cell.state-2::after {
+  background-color: #5bc0de; /* Color de la barra diagonal */
+  transform: rotate(-45deg); /* Rotación para crear la diagonal inversa (derecha a izquierda) */
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  margin-top: 20px;
+}
+
+label {
+  font-size: 16px;
+}
+
+input {
+  padding: 5px;
+  font-size: 16px;
+  width: 60px;
+  text-align: center;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
