@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Visualizer</title>
+</head>
+<body>
+  <canvas id="myvisualizer" width="800" height="400"></canvas>
+  <input type="range" id="slider1" min="0" max="1000" step="5" value="500" oninput="o2.frequency.value=Number(this.value)"></input>
+    <button onclick="playSound()">Play the sound</button>
+    <script src="orders.js"></script>
+</body>
+</html>

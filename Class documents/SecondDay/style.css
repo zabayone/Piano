@@ -1,0 +1,95 @@
+p {color: blue;}
+
+#p5 {color: red;}
+
+.first-half { color: orange;}
+.second-half { color: green;}
+
+/*El 5 se quedaria con el primero declarado al tener las dos clases
+Creamos una id para este*/
+
+.odd { background-color: yellow;}
+.even { background-color: grey;}
+
+#circle {
+    background-color: orange;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 100px;
+}
+
+.circle {
+    background-color: orange;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 100px;
+    border: 5px solid red;
+    margin: 5px;
+    padding: 20px;
+
+    position: relative;
+    left: 50px;
+    top: 20px;
+}
+
+#c3 {
+    margin-left: 150px;
+    top: 100px;
+}
+
+#huevo1{
+    background-color: rgb(255, 134, 91);
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 200px;
+    position:absolute;
+    top: 400px;
+    left: 250px;
+}
+
+#huevo2{
+    background-color: rgb(255, 134, 91);
+    height: 200px;
+    width: 200px;
+    border-radius: 50%;
+    text-align: center;
+    vertical-align: middle;
+    line-height: 200px;
+    position:absolute;
+    top: 600px;
+    left: 250px;
+}
+
+#pito{
+    background-color: rgb(255, 134, 91);
+    height: 150px;
+    width: 500px;
+    border-radius: 40%;
+    position:absolute;
+    top: 525px;
+    left: 350px;
+}
+
+#bar {
+    background-color: grey;
+    width: 100%;
+    height: 100px;
+    display: flex;
+  }
+  
+  .key {
+    width: 50px;
+    height: 80px;
+    background-color: orange;
+    margin: 2px;
+    
+  }

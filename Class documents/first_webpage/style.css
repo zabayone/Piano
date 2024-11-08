@@ -1,0 +1,32 @@
+* {
+    box-sizing: border-box;
+}
+
+.header {
+
+    text-align: center;
+}
+
+.footer {
+    text-align: center;
+}
+
+.navbar {
+    float: right;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.main{
+    flex: 50%;
+    padding: 20px;
+    border: 1px solid blueviolet;
+
+}
+.side{
+    flex:50%;
+    padding: 20px;
+}
