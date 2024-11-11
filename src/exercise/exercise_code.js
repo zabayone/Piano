@@ -42,11 +42,221 @@ const keyToMidi = {
     'k': 72   // C5
 };
 
-// HTML objects
-var head_div = document.getElementById("head");
-var buttons_div = document.getElementById("buttons");
-var controls_div = document.getElementById("controls");
-var oct_num = document.getElementById("oct_num");
+// html oblects
+var head_div = document.getElementById("head")
+var buttons_div = document.getElementById("buttons")
+var controls_div = document.getElementById("controls")
+var oct_num = document.getElementById("oct_num")
+
+const c = new AudioContext();
+
+/* function runned when the page is firstly loaded
+ *  - loads the saved variables from the local storage
+ *  - generates the correct html
+ *  - loads the correct html for the chosen exercise
+ *  
+ */
+function onLoad() {
+    // retrieving from local storage
+    type = localStorage.getItem("type") // which exercise
+    reps = localStorage.getItem("reps") // number of repetitions
+    key = localStorage.getItem("key")   // which intervals/chords
+    values = key.split("e")
+    let text = ''
+    switch(type){  // setts the correct control buttons
+        case "11":
+            dir = localStorage.getItem("dir") // gets the direction if it's melodic intervals
+            text = 'type = '+type+'<br>dir = '+dir+'<br>reps = ' + reps +'<br>key = '+key +'<br> values: <br>' // control string to be removed
+        case "12":
+            controls_div.innerHTML = interval_controls
+            break;
+        case"21":
+        case"22":
+        case"23":
+            controls_div.innerHTML = chord_controls
+            break;
+    }
+    if (type != "11") { // control text to be removed
+        text = 'type = '+type+'<br>reps = ' + reps +'<br>key = '+key +'<br> values: <br>'   
+    }
+    values.forEach( value => {
+        text = text + value + '<br>'
+    })
+    head_div.innerHTML = text
+
+    let but_text = ''
+    values.forEach(value =>{    // "generates" the html for displaying the correct choices for the execise
+        but_text = but_text + buttonHtml(value)
+        
+    })
+    buttons_div.innerHTML = but_text
+    oct_num.innerHTML = octave/12 - 1
+    next();
+}
+
+function buttonHtml(code){ // function for the Html
+    let text
+    switch (type) {
+        case "11":
+        case "12":
+            text = interval_text[code-1]
+            break;
+        case "21":
+        case "22":
+        case "23":
+            text = chord_text[code-1]
+            break;
+        default:
+            break;
+    }
+    return '<button id = "'+code+'" onclick = "  check_fun('+code+')" class = "choice_button">'+text+' </button>'
+}
+
+function check_fun(value) { // executed when chosing an option
+    if(checked == 0){ 
+       if(value == curr_val) {
+            head_div.innerHTML = "correct"
+        } else {
+            head.innerHTML = "wrong"
+        }
+        checked = 1
+    } else {
+        play(value)
+    }
+
+}
+
+// Function to play a note based on MIDI note number
+function playNoteFromMIDI(midiNote) {
+    // relate the value of the note to the same note in the octave specified by octave
+    //let true_note = ((midiNote > octave) ? (midiNote - octave)%12 : 12-(octave - midiNote)%12) + octave
+    let true_note = (midiNote - octave)%12 + octave
+    true_note = true_note < octave ? true_note+12 : true_note
+    //true_note = (true_note >= 0 ? true_note : true_note + (parseInt(true_note/12)^2)*12)%12;
+    // Formula to convert MIDI note to frequency (Hz)
+    const frequency = midiToFreq(true_note);
+
+    // Use Web Audio API to play the note
+    playFrequency(frequency);
+}
+
+
+function midiToFreq(midi){ // from midi to frequency
+    let midi_n = Number(midi)
+    let offset = midi_n - 69
+    return 440*(Math.pow(2,offset/12))
+}
+
+function replay(){ // replays the same solution
+    play(curr_val)
+}
+
+function next(){ // function that creates the next
+    if (rep_index < reps){
+        if (checked) {
+            checked = 0
+            note_list = []
+            //head_div.innerHTML = "values =  " + values
+            let idx = Math.floor(Math.random() * values.length)
+            curr_val = values[idx]
+            root = Math.floor(Math.random() * 32) + 50
+            head_div.innerHTML = "post =  " + idx + " " + curr_val + " " + root
+            play(curr_val)
+            head_div.innerHTML = "rep_idx = " + rep_index
+            rep_index++;
+        }
+    } else {
+        seeResults()
+    }
+}
+
+function play_root(){
+    let root_f = [] 
+    root_f.push(midiToFreq(root))
+    harm_play(root_f)
+}
+
+//play a set of notes harmonically --- doesn't work
+
+function harm_play(notes){
+    let txt = ''
+    for (let i = 0; i < notes.length; i++) {
+        txt = txt + note_list[i] + " ";            
+    }
+    head_div.innerHTML = txt
+    notes.forEach(note => {
+        resumeAudioContext();  
+        //head_div.innerHTML = note
+        asyncTone(note)
+        //playTone(note)
+    })
+}
+
+// play a sequence of notes melodically --- doesn't work
+
+function mel_play(notes){
+    let duration = 0;
+    notes.forEach(note => {
+        resumeAudioContext();  
+        //head_div.innerHTML = note
+        //asyncTone(note)
+        playTone(note)
+    })
+}
+
+
+// functions that implements the exercise, used to play more notes together or one after the other, depending on the exercise number 
+function play(val){
+    let curr_code = ''
+    if (type == "11") { // melodic intervals
+        curr_code = val
+        let second_note = 0;
+        switch (dir) { // switch on the direction of the exercise
+            case "up":
+                second_note = root + Number(curr_code)
+                break;
+            case "down":
+                second_note = root - Number(curr_code)
+                break;
+            case "both":
+                let rnd = Math.random()*1000
+                second_note = (rnd%2 == 0) ? root + Number(curr_code) : root - Number(curr_code)
+                break;
+            default:
+                break;
+        }
+        note_list.push(midiToFreq(root))
+        note_list.push(midiToFreq(second_note))
+        mel_play(note_list)
+        note_list = []
+    } else if (type == "12") { // harmonic intervals
+        curr_code = val
+        let second_note = root + Number(curr_code)
+        note_list.push(midiToFreq(root))
+        note_list.push(midiToFreq(second_note))
+        harm_play(note_list)
+        note_list = []
+    } else { // chords
+        note_list.push(midiToFreq(root))
+        curr_code = chord_codes[val-1]
+        curr_code = curr_code.split(' ')
+        //head_div.innerHTML = "code =  " + cur_code
+        curr_code.forEach(code => {
+            let oth = root + Number(code)
+            note_list.push(midiToFreq(oth))
+        })
+        harm_play(note_list)
+        note_list = []
+    }
+}
+
+function seeResults() {
+        
+        head_div.innerHTML = "done"
+        location.href = '/results'
+}
+
+// NICOLA'S CODE
 
 // Web Audio API setup
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();

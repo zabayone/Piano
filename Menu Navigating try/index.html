@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Menú de Juego</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Menú Principal -->
+  <div id="menu" class="menu active">
+    <button onclick="showPage('pagina1')">1</button>
+    <button onclick="showPage('pagina2')">2</button>
+    <button onclick="showPage('pagina3')">3</button>
+  </div>
+
+  <!-- Página 1 -->
+  <div id="pagina1" class="pagina">
+    <h1>Página 1</h1>
+    <button onclick="goBack()">Volver</button>
+  </div>
+
+  <!-- Página 2 -->
+  <div id="pagina2" class="pagina">
+    <h1>Página 2</h1>
+    <button onclick="goBack()">Volver</button>
+  </div>
+
+  <!-- Página 3 -->
+  <div id="pagina3" class="pagina">
+    <h1>Página 3</h1>
+    <button onclick="goBack()">Volver</button>
+  </div>
+
+  <script src="script.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,105 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  text-align: center;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(3, 100px);
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.cell {
+  width: 100px;
+  height: 100px;
+  background-color: #fff;
+  border: 2px solid #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.pieces {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.piece {
+  width: 50px;
+  height: 50px;
+  cursor: pointer;
+  user-select: none;
+  position: absolute;
+}
+
+.diagonal {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background-color: transparent;
+}
+
+.piece1::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top: 4px solid #333; /* Línea diagonal */
+  transform: rotate(45deg); /* Rotación para que sea diagonal */
+  transform-origin: center center; /* Asegura que la rotación sea desde el centro */
+}
+
+.piece2::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top: 4px solid #333; /* Línea diagonal */
+  transform: rotate(-45deg); /* Rotación para que sea diagonal opuesta */
+  transform-origin: center center; /* Asegura que la rotación sea desde el centro */
+}
+
+/* Nueva corrección para las piezas dentro de las celdas */
+.cell .piece1::before, .cell .piece2::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top: 4px solid #333; 
+  transform-origin: center center;
+  transform: rotate(45deg); /* Para piece1 */
+}
+
+.cell .piece2::before {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-top: 4px solid #333; 
+  transform-origin: center center;
+  transform: rotate(-45deg); /* Para piece2 */
+}
