@@ -11,31 +11,31 @@
     <div id="head"></div>
     <div id="buttons">buttons</div>
     <div id="controls">controls</div>
- 
+
     <!-- Piano keys layout starting from C4 (MIDI 60) -->
      <h2>Octave Number: </h2>
     <ul class="set">
-      <li class="white c" data-note="0" onclick="playNoteFromMIDI(60)"></li> <!-- C4 (MIDI 60) -->
-      <li class="black cs" data-note="1" onclick="playNoteFromMIDI(61)"></li> <!-- C#4 (MIDI 61) -->
-      <li class="white d" data-note="2" onclick="playNoteFromMIDI(62)"></li> <!-- D4 (MIDI 62) -->
-      <li class="black ds" data-note="3" onclick="playNoteFromMIDI(63)"></li> <!-- D#4 (MIDI 63) -->
-      <li class="white e" data-note="4" onclick="playNoteFromMIDI(64)"></li> <!-- E4 (MIDI 64) -->
-      <li class="white f" data-note="5" onclick="playNoteFromMIDI(65)"></li> <!-- F4 (MIDI 65) -->
-      <li class="black fs" data-note="6" onclick="playNoteFromMIDI(66)"></li> <!-- F#4 (MIDI 66) -->
-      <li class="white g" data-note="7" onclick="playNoteFromMIDI(67)"></li> <!-- G4 (MIDI 67) -->
-      <li class="black gs" data-note="8" onclick="playNoteFromMIDI(68)"></li> <!-- G#4 (MIDI 68) -->
-      <li class="white a" data-note="9" onclick="playNoteFromMIDI(69)"></li> <!-- A4 (MIDI 69) -->
-      <li class="black as" data-note="10" onclick="playNoteFromMIDI(70)"></li> <!-- A#4 (MIDI 70) -->
-      <li class="white b" data-note="11" onclick="playNoteFromMIDI(71)"></li> <!-- B4 (MIDI 71) -->
+      <!-- Key control buttons -->
+      <div id="key_control">
+        <button id="oct" onclick="octave_down()">Octave Down</button>
+        <button id="oct" onclick="octave_up()">Octave Up</button>
+        <button id="inst" onclick="Piano()">Piano</button>
+        <button id="inst" onclick="Guitar()">Guitar</button>
+        <button id="inst" onclick="Synth()">Synth</button>
+      </div>
+      <li class="white c" data-note="60" onclick="playNoteFromMIDI(60)"></li> <!-- C4 (MIDI 60) -->
+      <li class="black cs" data-note="61" onclick="playNoteFromMIDI(61)"></li> <!-- C#4 (MIDI 61) -->
+      <li class="white d" data-note="62" onclick="playNoteFromMIDI(62)"></li> <!-- D4 (MIDI 62) -->
+      <li class="black ds" data-note="63" onclick="playNoteFromMIDI(63)"></li> <!-- D#4 (MIDI 63) -->
+      <li class="white e" data-note="64" onclick="playNoteFromMIDI(64)"></li> <!-- E4 (MIDI 64) -->
+      <li class="white f" data-note="65" onclick="playNoteFromMIDI(65)"></li> <!-- F4 (MIDI 65) -->
+      <li class="black fs" data-note="66" onclick="playNoteFromMIDI(66)"></li> <!-- F#4 (MIDI 66) -->
+      <li class="white g" data-note="67" onclick="playNoteFromMIDI(67)"></li> <!-- G4 (MIDI 67) -->
+      <li class="black gs" data-note="68" onclick="playNoteFromMIDI(68)"></li> <!-- G#4 (MIDI 68) -->
+      <li class="white a" data-note="69" onclick="playNoteFromMIDI(69)"></li> <!-- A4 (MIDI 69) -->
+      <li class="black as" data-note="70" onclick="playNoteFromMIDI(70)"></li> <!-- A#4 (MIDI 70) -->
+      <li class="white b" data-note="71" onclick="playNoteFromMIDI(71)"></li> <!-- B4 (MIDI 71) -->
     </ul>
-
-    <!-- Key control buttons -->
-    <div id="key_control">
-      <button onclick="octave_down()">Octave Down</button>
-      <button onclick="shrink()">Shrink</button>
-      <button onclick="expand()">Expand</button>
-      <button onclick="octave_up()">Octave Up</button>
-    </div>
 
     <div class = 'item pentagramma'>
       <!--<h1 style="color: #FFFFFF; text-align: center; background-color: #c8553d;"> SELECT A NOTE</h1>-->
