@@ -1,3 +1,10 @@
+import FFT from '../libs/fft.js'
+
+var fft = new FFT(512)
+var audio_buffs = []
+
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
 // global variables
 var type
 var reps
@@ -16,6 +23,7 @@ var checked = 1
 var pressed_keys = [] // array used to store the pressed keys in order to avoid multiple presses if held
 
 //keyboards variables
+var audio_oct = 60
 var octave = 60
 
 // Map keys to relative midi values
@@ -40,8 +48,6 @@ var head_div = document.getElementById("head")
 var buttons_div = document.getElementById("buttons")
 var controls_div = document.getElementById("controls")
 var oct_num = document.getElementById("oct_num")
-
-const c = new AudioContext();
 
 /* function runned when the page is firstly loaded
  *  - loads the saved variables from the local storage
@@ -249,8 +255,6 @@ function seeResults() {
 // NICOLA'S CODE
 
 // Web Audio API setup
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
 function playFrequency(frequency) {
     const oscillator = audioCtx.createOscillator();
     const gainNode = audioCtx.createGain();
@@ -428,4 +432,69 @@ function octave_up() {
 function octave_down() {
     octave -= 12;
     oct_num.innerHTML = octave/12 - 1
+}
+
+async function file2Buffer(fname) {
+    try {
+       // Fetch the MP3 file
+       const file = await fetch(fname);
+       if (!response.ok) throw new Error(`Failed to fetch ${fname}`);
+
+       // Read the file as an ArrayBuffer
+       const arrayBuffer = await file.arrayBuffer();
+
+       // Decode audio data
+       const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+       // Access audio data as Float32Array for each channel
+       for (let i = 0; i < audioBuffer.numberOfChannels; i++) {
+           audio_buffs.push(audioBuffer.getChannelData(i)); // Each channel is a Float32Array
+       }
+
+       console.log(`Processed file: ${filePath}`);
+   } catch (error) {
+       console.error('Error processing audio file:', error);
+   }
+}
+
+function playAudio(to_play) {
+    if (to_play.length === 0) {
+        console.error('No audio buffers loaded.');
+        return;
+    }
+    // Play each buffer simultaneously
+    to_play.forEach((buffer, index) => {
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+        // Connect the source to the audio context destination (speakers)
+        source.connect(audioCtx.destination);
+        // Start playback
+        source.start();
+        console.log(`Playing buffer ${index + 1}...`);
+    });
+    console.log('Playing audio...');
+}
+
+function playAudioInSuccession(to_play) {
+    if (to_play.length === 0) {
+        console.error('No audio buffers loaded.');
+        return;
+    }
+
+    let startTime = audioCtx.currentTime; // Start scheduling from the current time
+
+    to_play.forEach((buffer, index) => {
+        const source = audioCtx.createBufferSource();
+        source.buffer = buffer;
+
+        // Connect the source to the audio context destination (speakers)
+        source.connect(audioCtx.destination);
+
+        // Schedule playback
+        source.start(startTime);
+        console.log(`Scheduled buffer ${index + 1} at ${startTime}s`);
+
+        // Update startTime for the next buffer
+        startTime += buffer.duration + 0.5;
+    });
 }
